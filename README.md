@@ -1,7 +1,7 @@
 # SAP-Project – Secure & Insecure Web Application
 
 - `main`: Contains the secure implementation.
-- `insecure`: Includes common web vulnerabilities.
+- `insecure`: Includes vulnerabilities.
 
 ---
 
