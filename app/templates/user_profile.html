@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ user.username }}</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                {% if user == current_user %}
+                <p><strong>Password length:</strong> {{ user.password|length }} characters</p>
+                <p class="text-muted">This is your profile</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h3>Messages by {{ user.username }}</h3>
+
+        {% if messages.items %}
+        {% for message in messages.items %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <small class="text-muted">
+                        {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                    </small>
+                </h5>
+                <p class="card-text">{{ message.body | safe }}</p>
+                {% if current_user == message.author %}
+                <div>
+                    <a href="{{ url_for('main.edit_message', id=message.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <form action="{{ url_for('main.delete_message', id=message.id) }}" method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?');">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <nav aria-label="User messages pagination">
+            <ul class="pagination">
+                {% if messages.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.user_profile', username=user.username, page=messages.prev_num) }}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+                {% endif %}
+
+                {% for page_num in messages.iter_pages() %}
+                {% if page_num %}
+                {% if page_num == messages.page %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.user_profile', username=user.username, page=page_num) }}">{{ page_num }}</a>
+                </li>
+                {% endif %}
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if messages.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.user_profile', username=user.username, page=messages.next_num) }}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% else %}
+        <div class="alert alert-info">No messages yet from this user.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

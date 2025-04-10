@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Message Board</h1>
+
+        {% if messages.items %}
+        <h3>Recent Messages</h3>
+        {% for message in messages.items %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{{ url_for('main.user_profile', username=message.author.username) }}">
+                        {{ message.author.username }}
+                    </a>
+                    <small class="text-muted">
+                        {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                    </small>
+                </h5>
+                <p class="card-text">{{ message.body | safe }}</p>
+                {% if current_user == message.author %}
+                <div>
+                    <a href="{{ url_for('main.edit_message', id=message.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <form action="{{ url_for('main.delete_message', id=message.id) }}" method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?');">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <nav aria-label="Message pagination">
+            <ul class="pagination">
+                {% if messages.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.index', page=messages.prev_num) }}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+                {% endif %}
+
+                {% for page_num in messages.iter_pages() %}
+                {% if page_num %}
+                {% if page_num == messages.page %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.index', page=page_num) }}">{{ page_num }}</a>
+                </li>
+                {% endif %}
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if messages.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.index', page=messages.next_num) }}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% else %}
+        <div class="alert alert-info">No messages yet. Be the first to post!</div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        {% if current_user.is_authenticated %}
+        <div class="card">
+            <div class="card-header">
+                Post a Message
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.message.label(class="form-label") }}
+                        {{ form.message(class="form-control", rows=4) }}
+                        {% for error in form.message.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {{ form.submit(class="btn btn-primary") }}
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Join the conversation</h5>
+                <p class="card-text">Sign in to post messages and interact with others.</p>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">Register</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
