@@ -1,9 +1,7 @@
 # SAP-Project – Secure & Insecure Web Application
 
-This repository demonstrates the development of a web application with a focus on **secure coding practices**. It is structured around two primary branches:
-
 - `main`: Contains the secure implementation.
-- `insecure`: Intentionally includes common web vulnerabilities for demonstration and educational purposes.
+- `insecure`: Includes common web vulnerabilities.
 
 ---
 
