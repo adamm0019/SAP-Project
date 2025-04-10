@@ -1,10 +1,5 @@
 # SAP-Project – Secure & Insecure Web Application
 
-- `main`: Contains the secure implementation.
-- `insecure`: Includes vulnerabilities.
-
----
-
 ## Branches Overview
 
 | Branch     | Description                                               |
