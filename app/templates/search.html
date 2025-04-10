@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1>Search Messages</h1>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <form action="" method="post" class="d-flex">
+                    {{ form.hidden_tag() }}
+                    <div class="flex-grow-1 me-2">
+                        {{ form.search_term(class="form-control", placeholder="Enter search term...") }}
+                    </div>
+                    {{ form.submit(class="btn btn-primary") }}
+                </form>
+                {% for error in form.search_term.errors %}
+                <div class="text-danger mt-2">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if search_term %}
+        <div class="alert alert-info">
+            Search results for: <span id="search-term">{{ search_term }}</span>
+        </div>
+
+        <div id="search-results"></div>
+
+        {% if results %}
+        <h3>Results ({{ results|length }})</h3>
+        {% for message in results %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{{ url_for('main.user_profile', username=message.author.username) }}">
+                        {{ message.author.username }}
+                    </a>
+                    <small class="text-muted">
+                        {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                    </small>
+                </h5>
+                <p class="card-text">{{ message.sanitized_body|safe }}</p>
+                <a href="{{ url_for('main.message', id=message.id) }}" class="btn btn-sm btn-outline-primary">View Message</a>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-warning">No results found for your search.</div>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
